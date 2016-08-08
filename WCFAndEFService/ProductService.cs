@@ -12,25 +12,53 @@ namespace WCFAndEFService
     {
         public Product GetProduct(int id)
         {
-            NorthwindEntities context = new NorthwindEntities();
-            var productEntity = (from p in context.ProductEntities
-                                 where p.ProductID == id
-                                 select p).FirstOrDefault();
-            if (productEntity != null)
+            //NorthwindEntities context = new NorthwindEntities();
+            //var productEntity = (from p in context.ProductEntities
+            //                     where p.ProductID == id
+            //                     select p).FirstOrDefault();
+            //if (productEntity != null)
+            //{
+            //    return new Product()
+            //    {
+            //        ProductID = productEntity.ProductID,
+            //        ProductName = productEntity.ProductName,
+            //        UnitPrice = (decimal)productEntity.UnitPrice,
+            //        Discontinued = productEntity.Discontinued,
+            //        QuantityPerUnit = productEntity.QuantityPerUnit
+            //    };
+            //}
+            //else
+            //{
+            //    throw new Exception("Invalid product id");
+            //}
+            
+            using(var context = new NorthwindEntities())
             {
-                return new Product()
+                var productEntity = context.sp_GetProductByID(id);
+                if (productEntity != null)
                 {
-                    ProductID = productEntity.ProductID,
-                    ProductName = productEntity.ProductName,
-                    UnitPrice = (decimal)productEntity.UnitPrice,
-                    Discontinued = productEntity.Discontinued,
-                    QuantityPerUnit = productEntity.QuantityPerUnit
-                };
+                    var product = (productEntity.FirstOrDefault());
+                    if (product != null)
+                    {
+                        return new Product()
+                        {
+                            ProductID = product.ProductID,
+                            ProductName = product.ProductName,
+                            UnitPrice = (decimal)product.UnitPrice,
+                            Discontinued = product.Discontinued,
+                            QuantityPerUnit = product.QuantityPerUnit
+                        };
+                    }
+                    else
+                    {
+                        throw new Exception("Invalid product id");
+                    }                    
+                }
+                else
+                {
+                    throw new Exception("Invalid product id");
+                }
             }
-            else
-            {
-                throw new Exception("Invalid product id");
-            }            
         }
     }
 }

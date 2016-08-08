@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="NorthwindModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="NorthwindModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Products">
           <Key>
             <PropertyRef Name="ProductID" />
@@ -20,11 +20,13 @@
           <Property Name="ReorderLevel" Type="smallint" />
           <Property Name="Discontinued" Type="bit" Nullable="false" />
         </EntityType>
+        <Function Name="sp_GetProductByID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+        </Function>
         <EntityContainer Name="NorthwindModelStoreContainer">
           <EntitySet Name="Products" EntityType="Self.Products" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="NorthwindModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -45,7 +47,25 @@
         </EntityType>
         <EntityContainer Name="NorthwindEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="ProductEntities" EntityType="NorthwindModel.ProductEntity" />
+          <FunctionImport Name="sp_GetProductByID" ReturnType="Collection(NorthwindModel.sp_GetProductByID_Result)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetProductByID1" EntitySet="ProductEntities" ReturnType="Collection(NorthwindModel.ProductEntity)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
+        <ComplexType Name="sp_GetProductByID_Result">
+          <Property Type="Int32" Name="ProductID" Nullable="false" />
+          <Property Type="String" Name="ProductName" Nullable="false" MaxLength="40" />
+          <Property Type="Int32" Name="SupplierID" Nullable="true" />
+          <Property Type="Int32" Name="CategoryID" Nullable="true" />
+          <Property Type="String" Name="QuantityPerUnit" Nullable="true" MaxLength="20" />
+          <Property Type="Decimal" Name="UnitPrice" Nullable="true" Precision="19" />
+          <Property Type="Int16" Name="UnitsInStock" Nullable="true" />
+          <Property Type="Int16" Name="UnitsOnOrder" Nullable="true" />
+          <Property Type="Int16" Name="ReorderLevel" Nullable="true" />
+          <Property Type="Boolean" Name="Discontinued" Nullable="false" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -68,6 +88,23 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_GetProductByID" FunctionName="NorthwindModel.Store.sp_GetProductByID">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="NorthwindModel.sp_GetProductByID_Result">
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="SupplierID" ColumnName="SupplierID" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="QuantityPerUnit" ColumnName="QuantityPerUnit" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="UnitsInStock" ColumnName="UnitsInStock" />
+                <ScalarProperty Name="UnitsOnOrder" ColumnName="UnitsOnOrder" />
+                <ScalarProperty Name="ReorderLevel" ColumnName="ReorderLevel" />
+                <ScalarProperty Name="Discontinued" ColumnName="Discontinued" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_GetProductByID1" FunctionName="NorthwindModel.Store.sp_GetProductByID" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

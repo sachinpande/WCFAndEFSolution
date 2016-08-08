@@ -12,6 +12,8 @@ namespace WCFAndEFService
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class NorthwindEntities : DbContext
     {
@@ -26,5 +28,32 @@ namespace WCFAndEFService
         }
     
         public virtual DbSet<ProductEntity> ProductEntities { get; set; }
+    
+        public virtual ObjectResult<sp_GetProductByID_Result> sp_GetProductByID(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_GetProductByID_Result>("sp_GetProductByID", idParameter);
+        }
+    
+        public virtual ObjectResult<ProductEntity> sp_GetProductByID1(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<ProductEntity>("sp_GetProductByID1", idParameter);
+        }
+    
+        public virtual ObjectResult<ProductEntity> sp_GetProductByID1(Nullable<int> id, MergeOption mergeOption)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<ProductEntity>("sp_GetProductByID1", mergeOption, idParameter);
+        }
     }
 }
